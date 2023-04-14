@@ -1,23 +1,78 @@
 package pixelmator
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
-type ExposureValue struct {
-	rangeValue
+type ColorAdjustmentValue interface {
+	getTerms() []term
+	setValues(map[string]string) error
 }
 
-func (ex *ExposureValue) getTerms() []term {
-	return []term{Exposure.getTerm()}
+type rangeInterface interface{}
+
+type RangeValue struct {
+	adj        ColorAdjustment
+	Value      int
+	MinOfRange int
+	MaxOfRange int
+	rangeInterface
 }
 
-func (ex *ExposureValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Exposure.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				ex.Value = i
+func (r *RangeValue) getTerms() []term {
+	return []term{r.adj.getTerm()}
+}
+
+func (r *RangeValue) setValues(m map[string]string) error {
+	if v, ok := m[r.adj.getTerm().osascriptVariable]; ok {
+		return parseInt(v, &r.Value)
+	}
+
+	return nil
+}
+
+func newRangeValue(adj ColorAdjustment) *RangeValue {
+	return &RangeValue{
+		adj:        adj,
+		Value:      0,
+		MinOfRange: 0, // TODO: set by adj
+		MaxOfRange: 0, // TODO: set by adj
+	}
+}
+
+type RangeGroup struct {
+	adj       ColorAdjustment
+	IsApplied bool
+	Group     map[ColorAdjustment]*RangeValue
+}
+
+func (r *RangeGroup) getTerms() []term {
+	terms := []term{r.adj.getTerm()}
+
+	for _, child := range r.Group {
+		terms = append(terms, child.getTerms()...)
+	}
+
+	return terms
+}
+
+func (r *RangeGroup) setValues(m map[string]string) error {
+	if s, ok := m[r.adj.getTerm().osascriptVariable]; ok {
+		if err := parseBool(s, &r.IsApplied); err != nil {
+			return err
+		}
+	}
+
+	var adjs []ColorAdjustment
+	for k := range r.Group {
+		adjs = append(adjs, k)
+	}
+
+	for _, adj := range adjs {
+		if s, ok := m[adj.getTerm().osascriptVariable]; ok {
+			if err := parseInt(s, &r.Group[adj].Value); err != nil {
+				return err
 			}
 		}
 	}
@@ -25,262 +80,39 @@ func (ex *ExposureValue) setValues(m map[string]any) error {
 	return nil
 }
 
-type TintValue struct {
-	rangeValue
-}
-
-func (t *TintValue) getTerms() []term {
-	return []term{Tint.getTerm()}
-}
-
-func (t *TintValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Tint.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				t.Value = i
-			}
-		}
+func newRangeGroup(adj ColorAdjustment) (*RangeGroup, error) {
+	children := adj.getChildren()
+	if len(children) < 1 {
+		return nil, fmt.Errorf("color adjustment '%s' is not range group", adj.getTerm().osascriptTerm)
 	}
 
+	m := make(map[ColorAdjustment]*RangeValue)
+	for _, child := range children {
+		m[child] = newRangeValue(child)
+	}
+
+	return &RangeGroup{
+		adj:   adj,
+		Group: m,
+	}, nil
+}
+
+func parseInt(s string, i *int) error {
+	i64, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		return err
+	}
+
+	*i = int(i64)
 	return nil
 }
 
-type HueValue struct {
-	rangeValue
-}
-
-func (h *HueValue) getTerms() []term {
-	return []term{Hue.getTerm()}
-}
-
-func (h *HueValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Hue.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				h.Value = i
-			}
-		}
+func parseBool(s string, b *bool) error {
+	bb, err := strconv.ParseBool(s)
+	if err != nil {
+		return err
 	}
 
-	return nil
-}
-
-type SaturationValue struct {
-	rangeValue
-}
-
-func (s *SaturationValue) getTerms() []term {
-	return []term{Saturation.getTerm()}
-}
-
-func (s *SaturationValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Saturation.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				s.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type TemperatureValue struct {
-	rangeValue
-}
-
-func (t *TemperatureValue) getTerms() []term {
-	return []term{Temperature.getTerm()}
-}
-
-func (t *TemperatureValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Temperature.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				t.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type HighlightsValue struct {
-	rangeValue
-}
-
-func (h *HighlightsValue) getTerms() []term {
-	return []term{Highlights.getTerm()}
-}
-
-func (h *HighlightsValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Highlights.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				h.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type ShadowsValue struct {
-	rangeValue
-}
-
-func (s *ShadowsValue) getTerms() []term {
-	return []term{Shadows.getTerm()}
-}
-
-func (s *ShadowsValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Shadows.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				s.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type ContrastValue struct {
-	rangeValue
-}
-
-func (c *ContrastValue) getTerms() []term {
-	return []term{Contrast.getTerm()}
-}
-
-func (c *ContrastValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Contrast.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				c.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type BlackPointValue struct {
-	rangeValue
-}
-
-func (b *BlackPointValue) getTerms() []term {
-	return []term{BlackPoint.getTerm()}
-}
-
-func (b *BlackPointValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case BlackPoint.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				b.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type FadeValue struct {
-	rangeValue
-}
-
-func (f *FadeValue) getTerms() []term {
-	return []term{Fade.getTerm()}
-}
-
-func (f *FadeValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Fade.getTerm().osascriptVariable:
-			if i, ok := v.(int); !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			} else {
-				f.Value = i
-			}
-		}
-	}
-
-	return nil
-}
-
-type VignetteValue struct {
-	rangeGroup
-}
-
-func (vig *VignetteValue) getTerms() []term {
-	return []term{
-		Vignette.getTerm(),
-		VignetteExposure.getTerm(),
-		VignetteBlackPoint.getTerm(),
-		VignetteSoftness.getTerm(),
-	}
-}
-
-func (vig *VignetteValue) setValues(m map[string]any) error {
-	for k, v := range m {
-		switch k {
-		case Vignette.getTerm().osascriptVariable:
-			b, ok := v.(bool)
-			if !ok {
-				return fmt.Errorf("invalid value: %s must be boolean (got %v)", k, v)
-			}
-
-			vig.IsApplied = b
-
-		case VignetteExposure.getTerm().osascriptVariable:
-			i, ok := v.(int)
-			if !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			}
-
-			vig.Group[VignetteExposure] = i
-
-		case VignetteBlackPoint.getTerm().osascriptVariable:
-			i, ok := v.(int)
-			if !ok {
-				return fmt.Errorf("invalid value: %s must be integer (got %v)", k, v)
-			}
-
-			vig.Group[VignetteBlackPoint] = i
-
-		case VignetteSoftness.getTerm().osascriptVariable:
-			i, ok := v.(int)
-			if !ok {
-				return fmt.Errorf("invalid value: must be integer (got %v)", v)
-			}
-
-			vig.Group[VignetteSoftness] = i
-		}
-	}
-
+	*b = bb
 	return nil
 }

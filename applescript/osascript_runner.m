@@ -7,12 +7,9 @@ int run_osascript(const char *script, const char** result_message, const char **
     NSAppleEventDescriptor *result = [appleScript executeAndReturnError:&error];
 
     if (result) {
-//         NSLog(@"Script executed successfully.");
+//         NSLog(@"Script executed successfully: %@", result);
         NSString *resultString = [result stringValue];
         *result_message = [resultString UTF8String];
-        if (*result_message != NULL) {
-            printf("%s\n", (char*)*result_message);
-        }
         return 0;
     } else {
 //         NSLog(@"Error executing script: %@", error);

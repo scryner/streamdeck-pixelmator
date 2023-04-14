@@ -69,26 +69,16 @@ func (ca ColorAdjustment) getTerm() term {
 	}
 }
 
+func (ca ColorAdjustment) getChildren() []ColorAdjustment {
+	switch ca {
+	case Vignette:
+		return []ColorAdjustment{VignetteExposure, VignetteBlackPoint, VignetteSoftness}
+	default:
+		return nil
+	}
+}
+
 type term struct {
-	osascriptTerm     string
 	osascriptVariable string
-}
-
-type ColorAdjustmentValue interface {
-	getTerms() []term
-	setValues(map[string]any) error
-}
-
-type rangeInterface interface{}
-
-type rangeValue struct {
-	Value      int
-	MinOfRange int
-	MaxOfRange int
-	rangeInterface
-}
-
-type rangeGroup struct {
-	IsApplied bool
-	Group     map[ColorAdjustment]rangeInterface
+	osascriptTerm     string
 }
