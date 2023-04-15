@@ -9,11 +9,12 @@ import (
 type ColorAdjustmentValue interface {
 	getTerms() []term
 	setValues(map[string]string) error
+	adjust(v any) error
 }
 
 type rangeInterface interface{}
 
-type RangeValue struct {
+type rangeValue struct {
 	adj        ColorAdjustment
 	Value      int
 	MinOfRange int
@@ -22,11 +23,11 @@ type RangeValue struct {
 	rangeInterface
 }
 
-func (r *RangeValue) getTerms() []term {
+func (r *rangeValue) getTerms() []term {
 	return []term{r.adj.getTerm()}
 }
 
-func (r *RangeValue) setValues(m map[string]string) error {
+func (r *rangeValue) setValues(m map[string]string) error {
 	if v, ok := m[r.adj.getTerm().osascriptVariable]; ok {
 		return parseInt(v, &r.Value)
 	}
@@ -34,12 +35,12 @@ func (r *RangeValue) setValues(m map[string]string) error {
 	return nil
 }
 
-func newRangeValue(adj ColorAdjustment) *RangeValue {
+func newRangeValue(adj ColorAdjustment) *rangeValue {
 	min, max := adj.getRange()
 	totalStep := math.Abs(float64(min) + float64(max))
 	step := int(totalStep) / 200
 
-	return &RangeValue{
+	return &rangeValue{
 		adj:        adj,
 		Value:      0,
 		MinOfRange: min,
@@ -48,13 +49,13 @@ func newRangeValue(adj ColorAdjustment) *RangeValue {
 	}
 }
 
-type RangeGroup struct {
+type rangeGroup struct {
 	adj       ColorAdjustment
 	IsApplied bool
-	Group     map[ColorAdjustment]*RangeValue
+	Group     map[ColorAdjustment]*rangeValue
 }
 
-func (r *RangeGroup) getTerms() []term {
+func (r *rangeGroup) getTerms() []term {
 	terms := []term{r.adj.getTerm()}
 
 	for _, child := range r.Group {
@@ -64,7 +65,7 @@ func (r *RangeGroup) getTerms() []term {
 	return terms
 }
 
-func (r *RangeGroup) setValues(m map[string]string) error {
+func (r *rangeGroup) setValues(m map[string]string) error {
 	if s, ok := m[r.adj.getTerm().osascriptVariable]; ok {
 		if err := parseBool(s, &r.IsApplied); err != nil {
 			return err
@@ -87,18 +88,18 @@ func (r *RangeGroup) setValues(m map[string]string) error {
 	return nil
 }
 
-func newRangeGroup(adj ColorAdjustment) (*RangeGroup, error) {
+func newRangeGroup(adj ColorAdjustment) (*rangeGroup, error) {
 	children := adj.getChildren()
 	if len(children) < 1 {
 		return nil, fmt.Errorf("color adjustment '%s' is not range group", adj.getTerm().osascriptTerm)
 	}
 
-	m := make(map[ColorAdjustment]*RangeValue)
+	m := make(map[ColorAdjustment]*rangeValue)
 	for _, child := range children {
 		m[child] = newRangeValue(child)
 	}
 
-	return &RangeGroup{
+	return &rangeGroup{
 		adj:   adj,
 		Group: m,
 	}, nil

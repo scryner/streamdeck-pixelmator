@@ -20,11 +20,21 @@ func main() {
 	px := pixelmator.NewPixelmator()
 
 	// registry handler to plugin
-	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventWillAppear), pixelmator.WillAppear(px))
-	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventWillAppear), pixelmator.WillDisappear(px))
-	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventTouchTap), pixelmator.TouchTap(px))
-	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventDialUp), pixelmator.DialUp(px))
-	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventDialRotate), pixelmator.DialRotate(px))
+	supportedAdjustments := []pixelmator.ColorAdjustment{
+		pixelmator.Exposure,
+		pixelmator.Tint,
+	}
+
+	for _, adj := range supportedAdjustments {
+		plugin.Handle(fmt.Sprintf("com.scryner.pixelmator.adjust.%d/%s", adj, sdk.EventTouchTap), pixelmator.TouchTap(px))
+		plugin.Handle(fmt.Sprintf("com.scryner.pixelmator.adjust.%d/%s", adj, sdk.EventDialUp), pixelmator.DialUp(px))
+		plugin.Handle(fmt.Sprintf("com.scryner.pixelmator.adjust.%d/%s", adj, sdk.EventDialRotate), pixelmator.DialRotate(px))
+		plugin.Handle(fmt.Sprintf("com.scryner.pixelmator.adjust.%d/%s", adj, sdk.EventWillAppear), pixelmator.WillAppear(px))
+		plugin.Handle(fmt.Sprintf("com.scryner.pixelmator.adjust.%d/%s", adj, sdk.EventWillDisappear), pixelmator.WillDisappear(px))
+	}
+
+	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventDeviceDidConnect), pixelmator.DeviceConnect(px))
+	plugin.Handle(fmt.Sprintf("com.scryner.pixelmator/%s", sdk.EventDeviceDidDisconnect), pixelmator.DeviceDisconnect(px))
 
 	// set logger
 	f, err := os.OpenFile("/tmp/streamdeck-pixelmator.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)

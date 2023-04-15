@@ -15,7 +15,7 @@ build:
 	cd $@ && zip -r $(PLUGIN_DIR).streamDeckPlugin $(PLUGIN_DIR)
 
 install: build
-	unzip $</$(PLUGIN_UUID).sdPlugin.streamDeckPlugin -d ~/Library/Application\ Support/com.elgato.StreamDeck/Plugins
+	unzip -o $</$(PLUGIN_UUID).sdPlugin.streamDeckPlugin -d ~/Library/Application\ Support/com.elgato.StreamDeck/Plugins
 
 uninstall:
 	rm -rf ~/Library/Application\ Support/com.elgato.StreamDeck/Plugins/$(PLUGIN_UUID).sdPlugin

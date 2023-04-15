@@ -124,6 +124,21 @@ func (ca ColorAdjustment) getRange() (int, int) {
 	}
 }
 
+func (ca ColorAdjustment) newValue() ColorAdjustmentValue {
+	switch ca {
+	case Vignette:
+		v, err := newRangeGroup(ca)
+		if err != nil {
+			return nil
+		}
+
+		return v
+
+	default:
+		return newRangeValue(ca)
+	}
+}
+
 type term struct {
 	osascriptVariable string
 	osascriptTerm     string

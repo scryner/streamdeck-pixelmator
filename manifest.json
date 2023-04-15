@@ -1,7 +1,8 @@
 {
   "Actions": [
     {
-      "Name": "Pixelmator Pro",
+      "Name": "Exposure",
+      "Icon": "exposure",
       "States": [
         {
           "Image": "actionDefaultImage",
@@ -22,7 +23,32 @@
       },
       "SupportedInMultiActions": false,
       "Tooltip": "Plugin for Pixelmator Pro",
-      "UUID": "com.scryner.pixelmator"
+      "UUID": "com.scryner.pixelmator.adjust.1"
+    },
+    {
+      "Name": "Tint",
+      "Icon": "tint",
+      "States": [
+        {
+          "Image": "actionDefaultImage",
+          "TitleAlignment": "middle",
+          "FontSize": "16"
+        }
+      ],
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Change a parameter",
+          "Push": "Turn on or off",
+          "Touch": "Turn on or off"
+        }
+      },
+      "SupportedInMultiActions": false,
+      "Tooltip": "Plugin for Pixelmator Pro",
+      "UUID": "com.scryner.pixelmator.adjust.2"
     }
   ],
   "SDKVersion": 2,
@@ -30,10 +56,11 @@
   "CodePath": "pixelmator",
   "Description": "A Plugin for Pixelmator Pro.",
   "Name": "Pixelmator Pro",
+  "Category": "Pixelmator Pro",
+  "CategoryIcon": "category-pixelmator",
   "Icon": "pluginIcon",
   "URL": "https://github.com/scryner/streamdeck-pixelmator",
   "Version": "0.1.0",
-  "PropertyInspectorPath": "inspector.html",
   "OS": [
     {
       "Platform": "mac",

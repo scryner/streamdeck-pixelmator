@@ -5,7 +5,12 @@ import (
 	"github.com/scryner/streamdeck-pixelmator/applescript"
 )
 
-func (r *RangeValue) Adjust(delta int) error {
+func (r *rangeValue) adjust(v any) error {
+	delta, ok := v.(int)
+	if !ok {
+		return fmt.Errorf("parameter is must be integer")
+	}
+
 	current := r.Value
 	tobe := current + delta
 
@@ -28,7 +33,7 @@ func (r *RangeValue) Adjust(delta int) error {
 	}
 
 	term := r.adj.getTerm().osascriptTerm
-	query := fmt.Sprintf(adjustQueryFormat, fmt.Sprintf("\t\t\tset %d to its %s", tobe, term))
+	query := fmt.Sprintf(adjustQueryFormat, fmt.Sprintf("\t\t\tset its %s to %d", term, tobe))
 
 	// run query
 	if _, err := applescript.Run(query); err != nil {
@@ -39,8 +44,13 @@ func (r *RangeValue) Adjust(delta int) error {
 	return nil
 }
 
-func (rg *RangeGroup) Apply(applied bool) error {
-	term := rg.adj.getTerm().osascriptTerm
+func (r *rangeGroup) adjust(v any) error {
+	applied, ok := v.(bool)
+	if !ok {
+		return fmt.Errorf("parameter is must be boolean")
+	}
+
+	term := r.adj.getTerm().osascriptTerm
 	query := fmt.Sprintf(adjustQueryFormat, fmt.Sprintf("\t\t\tset %v to its %s", applied, term))
 
 	// run query
@@ -48,17 +58,17 @@ func (rg *RangeGroup) Apply(applied bool) error {
 		return err
 	}
 
-	rg.IsApplied = applied
+	r.IsApplied = applied
 	return nil
 }
 
-func (rg *RangeGroup) AdjustChild(child ColorAdjustment, delta int) error {
-	adj, ok := rg.Group[child]
+func (r *rangeGroup) adjustChild(child ColorAdjustment, delta int) error {
+	adj, ok := r.Group[child]
 	if !ok {
-		return fmt.Errorf("%s is not children of %s", child.getTerm().osascriptTerm, rg.adj.getTerm().osascriptTerm)
+		return fmt.Errorf("%s is not children of %s", child.getTerm().osascriptTerm, r.adj.getTerm().osascriptTerm)
 	}
 
-	return adj.Adjust(delta)
+	return adj.adjust(delta)
 }
 
 const adjustQueryFormat = `if application "Pixelmator Pro" is running then
