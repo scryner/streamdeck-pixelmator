@@ -78,6 +78,52 @@ func (ca ColorAdjustment) getChildren() []ColorAdjustment {
 	}
 }
 
+func (ca ColorAdjustment) getRange() (int, int) {
+	switch ca {
+	case Exposure:
+		return -400, 400
+
+	case Tint:
+		return -200, 200
+
+	case Hue:
+		return -100, 100
+
+	case Saturation:
+		return -100, 100
+
+	case Temperature:
+		return -200, 200
+
+	case Highlights:
+		return -100, 100
+
+	case Shadows:
+		return -100, 100
+
+	case Contrast:
+		return -200, 200
+
+	case BlackPoint:
+		return -200, 200
+
+	case Fade:
+		return 0, 200
+
+	case VignetteExposure:
+		return -200, 200
+
+	case VignetteBlackPoint:
+		return -200, 200
+
+	case VignetteSoftness:
+		return 0, 100
+
+	default:
+		return 0, 0
+	}
+}
+
 type term struct {
 	osascriptVariable string
 	osascriptTerm     string

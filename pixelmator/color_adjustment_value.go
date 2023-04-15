@@ -33,11 +33,13 @@ func (r *RangeValue) setValues(m map[string]string) error {
 }
 
 func newRangeValue(adj ColorAdjustment) *RangeValue {
+	min, max := adj.getRange()
+
 	return &RangeValue{
 		adj:        adj,
 		Value:      0,
-		MinOfRange: 0, // TODO: set by adj
-		MaxOfRange: 0, // TODO: set by adj
+		MinOfRange: min,
+		MaxOfRange: max,
 	}
 }
 
