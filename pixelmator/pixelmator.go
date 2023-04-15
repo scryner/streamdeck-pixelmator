@@ -12,7 +12,9 @@ type Pixelmator struct {
 func NewPixelmator() *Pixelmator {
 	// start sync
 
-	return &Pixelmator{}
+	return &Pixelmator{
+		values: make(map[ColorAdjustment]ColorAdjustmentValue),
+	}
 }
 
 func (px *Pixelmator) Stop() {

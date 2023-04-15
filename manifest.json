@@ -33,6 +33,7 @@
   "Icon": "pluginIcon",
   "URL": "https://github.com/scryner/streamdeck-pixelmator",
   "Version": "0.1.0",
+  "PropertyInspectorPath": "inspector.html",
   "OS": [
     {
       "Platform": "mac",
