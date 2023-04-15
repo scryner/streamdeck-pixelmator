@@ -61,3 +61,5 @@ _testmain.go
 # build output
 bin
 .gopath
+
+build

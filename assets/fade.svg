@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 32 32" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs/>
+<g id="무제">
+<path d="M8.24 25.14L7 26.67C8.23859 27.7234 9.65371 28.5495 11.18 29.11L11.87 27.24C10.5461 26.7585 9.31736 26.0476 8.24 25.14Z" fill="#000000" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M4.19 18L2.19 18.41C2.47521 20.0256 3.04037 21.5789 3.86 23L5.59 22C4.89798 20.7566 4.42445 19.4036 4.19 18Z" fill="#000000" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M11.82 4.76L11.13 2.89C9.62136 3.45581 8.22355 4.28163 7 5.33L8.24 6.86C9.3023 5.95738 10.5138 5.24675 11.82 4.76Z" fill="#000000" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M5.59 10L3.86 9C3.05595 10.4254 2.5013 11.9778 2.22 13.59L4.22 13.93C4.44527 12.5505 4.90885 11.2206 5.59 10Z" fill="#000000" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M16 2L16 4C22.6274 4 28 9.37258 28 16C28 22.6274 22.6274 28 16 28L16 30C23.732 30 30 23.732 30 16C30 8.26801 23.732 2 16 2Z" fill="#000000" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M0 0L32 0L32 0L32 32L32 32L0 32L0 32L0 0L0 0Z" fill="#893636" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="none"/>
+</g>
+</svg>
