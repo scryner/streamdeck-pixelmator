@@ -13,16 +13,15 @@
         "Encoder"
       ],
       "Encoder": {
-        "layout": "$A1",
+        "layout": "$B1",
         "TriggerDescription": {
           "Rotate": "Change a parameter",
-          "Push": "Increase the change rate",
-          "Touch": "Toggle the orientation",
-          "LongTouch": "Reset the change rate"
+          "Push": "Turn on or off",
+          "Touch": "Turn on or off"
         }
       },
       "SupportedInMultiActions": false,
-      "Tooltip": "Pluging for Pixelmator Pro",
+      "Tooltip": "Plugin for Pixelmator Pro",
       "UUID": "com.scryner.pixelmator"
     }
   ],

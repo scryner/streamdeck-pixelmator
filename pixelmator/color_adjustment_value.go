@@ -2,6 +2,7 @@ package pixelmator
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -17,6 +18,7 @@ type RangeValue struct {
 	Value      int
 	MinOfRange int
 	MaxOfRange int
+	step       int
 	rangeInterface
 }
 
@@ -34,12 +36,15 @@ func (r *RangeValue) setValues(m map[string]string) error {
 
 func newRangeValue(adj ColorAdjustment) *RangeValue {
 	min, max := adj.getRange()
+	totalStep := math.Abs(float64(min) + float64(max))
+	step := int(totalStep) / 200
 
 	return &RangeValue{
 		adj:        adj,
 		Value:      0,
 		MinOfRange: min,
 		MaxOfRange: max,
+		step:       step,
 	}
 }
 
