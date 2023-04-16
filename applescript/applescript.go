@@ -6,9 +6,12 @@ package applescript
 import "C"
 import (
 	"fmt"
+	"time"
 )
 
 func Run(s string) (string, error) {
+	time.Sleep(time.Millisecond * 10)
+
 	var resultMessage, errorMessage *C.char
 	rc := C.run_osascript(C.CString(s), &resultMessage, &errorMessage)
 

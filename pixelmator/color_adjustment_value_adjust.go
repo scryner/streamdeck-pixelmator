@@ -3,6 +3,7 @@ package pixelmator
 import (
 	"fmt"
 	"github.com/scryner/streamdeck-pixelmator/applescript"
+	"log"
 )
 
 func (r *rangeValue) adjust(v any) error {
@@ -31,6 +32,8 @@ func (r *rangeValue) adjust(v any) error {
 		// set to min value or range
 		tobe = r.MinOfRange
 	}
+
+	log.Printf("[%s] %d", r.adj.getTerm().osascriptTerm)
 
 	term := r.adj.getTerm().osascriptTerm
 	query := fmt.Sprintf(adjustQueryFormat, fmt.Sprintf("\t\t\tset its %s to %d", term, tobe))
