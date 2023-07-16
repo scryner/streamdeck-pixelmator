@@ -33,7 +33,7 @@ func (r *rangeValue) adjust(v any) error {
 		tobe = r.MinOfRange
 	}
 
-	log.Printf("[%s] %d", r.adj.getTerm().osascriptTerm)
+	log.Printf("[%s] %d", r.adj.getTerm().osascriptTerm, tobe)
 
 	term := r.adj.getTerm().osascriptTerm
 	query := fmt.Sprintf(adjustQueryFormat, fmt.Sprintf("\t\t\tset its %s to %d", term, tobe))
